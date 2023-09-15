@@ -5,9 +5,11 @@ import threading
 import sys
 import os
 
+# function to check the type of the words list file type
 def type_check(file_name, file_type):
     return file_name.lower().endswith(file_type)
 
+# class of the programm
 class ZIP_cracker():
     def __init__(self, args):
         self.args =args
@@ -20,7 +22,8 @@ class ZIP_cracker():
             return False
         if test:
             return True
-        
+
+    # try open zip file using list of passwords   
     def check_password(self, passwords):
         success = False
         for password in passwords:
@@ -33,13 +36,14 @@ class ZIP_cracker():
                 break
         if not success:
             print('cannot find the password in words list :-(')
-    
+    # slipt words list of passwords into lists in number of the threads using 
     def passwords_list(self):
         with open(self.args.wordsList, 'r', encoding='latin-1') as file :
             passwords_list = [password.strip() for password in file.readlines()]
         chunks_passwords = [passwords_list[i:i+self.args.nbThread] for i in range(0, len(passwords_list), self.args.nbThread)]
         return chunks_passwords
     
+    # main method of craking the zip file
     def run(self):
         threads= []
         chunks_passwords = self.passwords_list()
@@ -50,7 +54,7 @@ class ZIP_cracker():
 
         for thread in threads:
             thread.join()
-
+    # list of all the zip file contents
     def list(self):
         with zipfile.ZipFile(self.args.file, 'r') as zip_file:
             print(f'total: {len(zip_file.namelist())}')
